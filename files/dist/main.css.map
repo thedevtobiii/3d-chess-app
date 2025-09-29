@@ -1,0 +1,1 @@
+{"version":3,"file":"main.css","mappings":"AAAA;EACE,eAAe;EACf,MAAM;EACN,OAAO;EACP,aAAa;AACf;AACA;EACE,gBAAgB;AAClB,C","sources":["webpack:///./src/style.css"],"sourcesContent":[".webgl{\r\n  position: fixed;\r\n  top: 0;\r\n  left: 0;\r\n  outline: none;\r\n}\r\nhtml, body {\r\n  overflow: hidden;\r\n}"],"names":[],"sourceRoot":""}
