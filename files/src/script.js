@@ -50,6 +50,19 @@ gltfloader.load('./models/pawn/pawn9.gltf',
 scene.add(pawn)
 pawn.scale.set(0.1,0.1,0.1)
 pawn.position.set(3,0,0)
+pawn.traverse(
+  (child)=>{
+if(child.isMesh){
+  child.material = new THREE.MeshStandardMaterial({
+    color: 0x4169e1,
+    metalness:0.7,
+    roughness:0.2
+  })
+}
+  }
+)
+
+// console.log(pawn.children.material)
   }
 )
 
@@ -58,6 +71,16 @@ gltfloader.load('./models/knight/knight5.gltf', (gltf)=>{
 const knight = gltf.scene
 knight.position.set(2,0,-2)
 knight.scale.set(0.1, 0.1, 0.1)
+knight.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial({
+    color: 0x4169e1,
+    metalness: 0.7,
+    roughness: 0.2
+  })
+  child.material.side = THREE.DoubleSide
+}
+})
 scene.add(knight)
 })
 
@@ -67,6 +90,16 @@ gltfloader.load('./models/bishop/bishop.gltf', (gltf)=>{
   bishop.position.set(-2,0,0)
   bishop.scale.set(0.1, 0.1, 0.1)
   scene.add(bishop)
+  bishop.traverse((child)=>{
+    if (child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({
+        color: 0x4169e1,
+        metalness: 0.7,
+        roughness: 0.2
+      })
+      child.material.side = THREE.DoubleSide
+    }
+  })
 }
 )
 
@@ -76,6 +109,16 @@ gltfloader.load('./models/queen/queen.gltf',(gltf)=>{
   queen.position.set(-2,0,-2)
   queen.scale.set(0.1, 0.1, 0.1)
   scene.add(queen)
+  queen.traverse((child)=>{
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({
+        color : 0x4169e1,
+        metalness:0.7,
+        roughness: 0.2
+      })
+      child.material.side = THREE.DoubleSide
+    }
+  })
 
 })
 
@@ -85,6 +128,16 @@ gltfloader.load('./models/king/king3.gltf', (gltf)=>{
   king.position.set(-2,0,3)
   king.scale.set(0.1, 0.1, 0.1)
   scene.add(king)
+    king.traverse((child)=>{
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({
+        color : 0x4169e1,
+        metalness:0.7,
+        roughness: 0.2
+      })
+      child.material.side = THREE.DoubleSide
+    }
+  })
 })
 
 //rooks
@@ -93,12 +146,41 @@ const rook = gltf.scene
 rook.position.set(0,0,0)
 rook.scale.set(0.1,0.1,0.1)
 scene.add(rook)
+rook.traverse((child)=>{
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({
+        color : 0x4169e1,
+        metalness:0.7,
+        roughness: 0.2
+      })
+      child.material.side = THREE.DoubleSide
+    }
+  })
+})
+
+//board
+gltfloader.load('./models/chessboard/chessboard2.gltf', (gltf)=>{
+  const chessBoard = gltf.scene
+  chessBoard.scale.set(0.15,0.15,0.15)
+  chessBoard.position.set(0,-1,0)
+  scene.add(chessBoard)
+  chessBoard.traverse((child)=>{
+    if(child.isMesh){
+      child.material = new THREE.MeshStandardMaterial({
+        color : 0x006400,
+        metalness:0.7,
+        roughness: 0.2
+      })
+      child.material.side = THREE.DoubleSide
+    }
+  })
+
 })
 
 
 //objects
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(10, 10),
+    new THREE.PlaneGeometry(20, 20),
     new THREE.MeshStandardMaterial({
         color: '#444444',
         metalness: 0.5,
@@ -107,7 +189,8 @@ const floor = new THREE.Mesh(
 )
 
 floor.rotation.x = - Math.PI * 0.5
-// floor.material.side = THREE.DoubleSide
+floor.position.y = -1.1
+floor.material.side = THREE.DoubleSide
 scene.add(floor)
 
 
@@ -122,7 +205,7 @@ scene.add(directionalLight)
 
 //camera
 const camera = new THREE.PerspectiveCamera(75, sizes.width/sizes.height, 0.1 ,100);
-camera.position.set(0, 5, 10)
+camera.position.set(0, 5, 12)
 scene.add(camera)
 
 //controls
