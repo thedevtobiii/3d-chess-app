@@ -46,6 +46,15 @@ const chessNormalTexture =textureLoader.load('/textures/chess-pieces/normal.jpg'
 const chessAOTexture = textureLoader.load('/textures/chesspieces/ambientOcclusion.jpg')
 const chessRoughnessTexture = textureLoader.load('/textures/chess-pieces/roughness.jpg')
 
+//black pieces
+const blackColorTexture = textureLoader.load('/textures/black-pieces/color.jpeg')
+const blacknormalTexture = textureLoader.load('/textures/black-pieces/normal.jpeg')
+const blackglossinessTexture = textureLoader.load('/textures/black-pieces/glossiness.jpeg')
+const blackheightTexture = textureLoader.load('/textures/black-pieces/height.jpeg')
+const blackmetallicTexture = textureLoader.load('/textures/black-pieces/metallic.jpeg')
+const blackroughnessTexture = textureLoader.load('/textures/black-pieces/roughness.jpeg')
+const blackspecularTexture = textureLoader.load('/textures/black-pieces/specular.jpeg')
+
 chessColorTexture.repeat.set(2,2)
 chessAOTexture.repeat.set(2,2)
 chessNormalTexture.repeat.set(2,2)
@@ -103,13 +112,23 @@ pawnsWhite.push(pawnPieces)
 scene.add(pawnPieces)
 }
 
+//blackpawns
+const blackPawn = pawn.clone(true)
+blackPawn.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial({
+    color: 0xffffff
+  })
+}
+})
+//to create multiple balckpawns lined up accordingly
 const pawnsBlack = []
-
 for (let i = 0; i<8; i++){
-const pawnPieces = pawn.clone(true)
+const pawnPieces = blackPawn.clone(true)
 pawnPieces.position.set((i-3.5)*squareSize, -0.8, -3*squareSize)
 pawnsBlack.push(pawnPieces)
 scene.add(pawnPieces)
+
 }
 
 // console.log(pawn.children.material)
@@ -140,9 +159,17 @@ clonedKnights.position.set(x * squareSize, -0.8, 4*squareSize)
 
 scene.add(clonedKnights)
 
+//black knights
+const blackKnight = knight.clone(true)
+blackKnight.traverse((child)=>{
+  if (child.isMesh){
+    child.material = new THREE.MeshStandardMaterial()
+  }
+})
+
 const positionBlackKnights = [-2.5, 2.5]
 positionBlackKnights.forEach((x)=>{
-  const clonedKnights = knight.clone()
+  const clonedKnights = blackKnight.clone()
   clonedKnights.position.set(x * squareSize, -0.8, -4*squareSize)
 
   scene.add(clonedKnights)
@@ -178,9 +205,16 @@ clonedBishops.position.set(x * squareSize, -0.8, 4*squareSize)
 scene.add(clonedBishops)
 })
 
+//black bishops
+const blackBishop = bishop.clone(true)
+blackBishop.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial()
+}
+})
 
 positionBishops.forEach((x)=>{
-  const clonedBlackBishops = bishop.clone()
+  const clonedBlackBishops = blackBishop.clone()
   clonedBlackBishops.position.set(x * squareSize, -0.8, -4*squareSize)
   scene.add(clonedBlackBishops)
 })
@@ -210,6 +244,11 @@ queen.position.set(-0.5 * squareSize, -0.8, 4*squareSize)
 scene.add(queen)
 
 const blackQueen = queen.clone()
+blackQueen.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial()
+}
+})
 blackQueen.position.set(-0.5 * squareSize, -0.8, -4*squareSize)
 scene.add(blackQueen)
 
@@ -238,6 +277,11 @@ king.position.set(0.5 * squareSize, -0.8, 4*squareSize)
 scene.add(king)
 
 const blackKing = king.clone()
+blackKing.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial()
+}
+})
 blackKing.position.set(0.5 * squareSize, -0.8, -4*squareSize)
 scene.add(blackKing)
 })
@@ -270,28 +314,53 @@ scene.add(clonedRooks)
 
 })
 
+const blackRook = rook.clone(true)
+blackRook.traverse((child)=>{
+if (child.isMesh){
+  child.material = new THREE.MeshStandardMaterial()
+}
+})
+
 positionRooks.forEach((x)=>{
-  const clonedBlackRooks = rook.clone()
+  const clonedBlackRooks = blackRook.clone()
   clonedBlackRooks.position.set(x * squareSize, -0.8, -4*squareSize)
   scene.add(clonedBlackRooks)
 })
 })
 
 //board
-gltfloader.load('./models/chessboard/chessboard2.gltf', (gltf)=>{
+gltfloader.load('./models/chessboard/chessboard4.gltf', (gltf)=>{
   const chessBoard = gltf.scene
   chessBoard.scale.set(0.3,0.3,0.3)
   chessBoard.position.set(0,-3,0)
   scene.add(chessBoard)
   chessBoard.traverse((child)=>{
-    if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({
-        color : 0x006400,
-        metalness:0.7,
-        roughness: 0.2
-      })
-      child.material.side = THREE.DoubleSide
-    }
+   if (child.isMesh){
+    console.log('Mesh:', child.name, 'UUID:', child.uuid)
+
+        if (child.name === "Cube_1") {
+        child.material = new THREE.MeshStandardMaterial({
+           color: 0x006400, // white
+          metalness: 0.3,
+          roughness: 0.6
+ 
+
+        })
+      }
+       if (child.name === "Cube_2") {
+        child.material = new THREE.MeshStandardMaterial({
+         
+
+                       map: chessColorTexture,
+    alphaMap: chessAlphaTexture,
+    aoMap: chessAOTexture,
+    displacementMap: chessHeightTexture,
+    normalMap: chessNormalTexture,
+    roughnessMap: chessRoughnessTexture
+        })
+
+   }
+  }
   })
 
 })
@@ -302,7 +371,7 @@ gltfloader.load('./models/chessboard/chessboard2.gltf', (gltf)=>{
 
 //objects
 const floor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20),
+    new THREE.PlaneGeometry(40, 40),
     new THREE.MeshStandardMaterial({
         color: '#444444',
         metalness: 0.5,
@@ -311,7 +380,7 @@ const floor = new THREE.Mesh(
 )
 
 floor.rotation.x = - Math.PI * 0.5
-floor.position.y = -1.1
+floor.position.y = -3.2
 floor.material.side = THREE.DoubleSide
 scene.add(floor)
 
@@ -321,7 +390,7 @@ const ambientLight = new THREE.AmbientLight(0xffffff, 1)
 scene.add(ambientLight)
 const directionalLight = new THREE.DirectionalLight(0xffffff, 1)
 // directionalLight.position.set(3, 3, 8)
-directionalLight.position.set(0,5,0)
+directionalLight.position.set(3,5,0)
 scene.add(directionalLight)
 
 
