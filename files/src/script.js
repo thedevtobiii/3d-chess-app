@@ -70,36 +70,38 @@ chessAOTexture.wrapT = THREE.RepeatWrapping
 chessNormalTexture.wrapT = THREE.RepeatWrapping
 chessRoughnessTexture.wrapT = THREE.RepeatWrapping
 
-chessColorTexture.magFilter = THREE.NearestFilter
-chessColorTexture.minFilter = THREE.NearestFilter
+
+
+
 
 //scene
 const scene = new THREE.Scene();
 
 //models
+//model materials
+const whiteMaterial = new THREE.MeshStandardMaterial({
+    map: chessColorTexture,
+    normalMap: chessNormalTexture,
+    roughnessMap: chessRoughnessTexture,
+    metalness: 0.5,
+    roughness: 0.2
+})
+
+const blackMaterial = new THREE.MeshStandardMaterial({
+
+})
+
 //pawns
 const gltfloader = new GLTFLoader()
 gltfloader.load('./models/pawn/pawn9.gltf', 
   (gltf)=>{
-    console.log(gltf)
-    const pawn = gltf.scene
-// scene.add(pawn)
+console.log(gltf)
+const pawn = gltf.scene
 pawn.scale.set(0.1,0.1,0.1)
-// pawn.position.set(3,0,0)
 pawn.traverse(
   (child)=>{
 if(child.isMesh){
-  child.material = new THREE.MeshStandardMaterial({
-    // color: 0x4169e1,
-    // metalness:0.7,
-    // roughness:0.2,
-    map: chessColorTexture,
-    alphaMap: chessAlphaTexture,
-    aoMap: chessAOTexture,
-    displacementMap: chessHeightTexture,
-    normalMap: chessNormalTexture,
-    roughnessMap: chessRoughnessTexture
-  })
+  child.material = whiteMaterial
 }
   }
 )
@@ -116,9 +118,7 @@ scene.add(pawnPieces)
 const blackPawn = pawn.clone(true)
 blackPawn.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial({
-    color: 0xffffff
-  })
+  child.material = blackMaterial
 }
 })
 //to create multiple balckpawns lined up accordingly
@@ -130,7 +130,6 @@ pawnsBlack.push(pawnPieces)
 scene.add(pawnPieces)
 
 }
-
 // console.log(pawn.children.material)
   }
 )
@@ -141,11 +140,7 @@ const knight = gltf.scene
 knight.scale.set(0.1, 0.1, 0.1)
 knight.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial({
-    color: 0x4169e1,
-    metalness: 0.7,
-    roughness: 0.2
-  })
+  child.material = whiteMaterial
   child.material.side = THREE.DoubleSide
 }
 })
@@ -163,7 +158,7 @@ scene.add(clonedKnights)
 const blackKnight = knight.clone(true)
 blackKnight.traverse((child)=>{
   if (child.isMesh){
-    child.material = new THREE.MeshStandardMaterial()
+    child.material = blackMaterial
   }
 })
 
@@ -186,11 +181,7 @@ gltfloader.load('./models/bishop/bishop.gltf', (gltf)=>{
   // scene.add(bishop)
   bishop.traverse((child)=>{
     if (child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({
-        color: 0x4169e1,
-        metalness: 0.7,
-        roughness: 0.2
-      })
+      child.material = whiteMaterial
       child.material.side = THREE.DoubleSide
     }
   })
@@ -209,7 +200,7 @@ scene.add(clonedBishops)
 const blackBishop = bishop.clone(true)
 blackBishop.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial()
+  child.material = blackMaterial
 }
 })
 
@@ -230,11 +221,7 @@ gltfloader.load('./models/queen/queen.gltf',(gltf)=>{
   // scene.add(queen)
   queen.traverse((child)=>{
     if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({
-        color : 0x4169e1,
-        metalness:0.7,
-        roughness: 0.2
-      })
+      child.material = whiteMaterial
       child.material.side = THREE.DoubleSide
     }
   })
@@ -246,7 +233,7 @@ scene.add(queen)
 const blackQueen = queen.clone()
 blackQueen.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial()
+  child.material = blackMaterial
 }
 })
 blackQueen.position.set(-0.5 * squareSize, -0.8, -4*squareSize)
@@ -263,11 +250,7 @@ gltfloader.load('./models/king/king3.gltf', (gltf)=>{
   // scene.add(king)
     king.traverse((child)=>{
     if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({
-        color : 0x4169e1,
-        metalness:0.7,
-        roughness: 0.2
-      })
+      child.material = whiteMaterial
       child.material.side = THREE.DoubleSide
     }
   })
@@ -279,7 +262,7 @@ scene.add(king)
 const blackKing = king.clone()
 blackKing.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial()
+  child.material = blackMaterial
 }
 })
 blackKing.position.set(0.5 * squareSize, -0.8, -4*squareSize)
@@ -294,11 +277,7 @@ rook.scale.set(0.1,0.1,0.1)
 // scene.add(rook)
 rook.traverse((child)=>{
     if(child.isMesh){
-      child.material = new THREE.MeshStandardMaterial({
-        color : 0x4169e1,
-        metalness:0.7,
-        roughness: 0.2
-      })
+      child.material = whiteMaterial
       child.material.side = THREE.DoubleSide
     }
   })
@@ -317,7 +296,7 @@ scene.add(clonedRooks)
 const blackRook = rook.clone(true)
 blackRook.traverse((child)=>{
 if (child.isMesh){
-  child.material = new THREE.MeshStandardMaterial()
+  child.material = blackMaterial
 }
 })
 
