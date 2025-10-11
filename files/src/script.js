@@ -40,21 +40,7 @@ window.addEventListener('dblclick', ()=>{
 //textures
 const textureLoader = new THREE.TextureLoader()
 const chessColorTexture = textureLoader.load('/textures/chess-pieces/color.jpg')
-const chessAlphaTexture = textureLoader.load('/textures/chess-pieces/color.jpg')
-const chessHeightTexture = textureLoader.load('/textures/chess-pieces/height.png')
 const chessNormalTexture =textureLoader.load('/textures/chess-pieces/normal.jpg')
-const chessAOTexture = textureLoader.load('/textures/chesspieces/ambientOcclusion.jpg')
-const chessRoughnessTexture = textureLoader.load('/textures/chess-pieces/roughness.jpg')
-
-// //black pieces
-// const blackColorTexture = textureLoader.load('/textures/black-pieces/color.jpeg')
-// const blacknormalTexture = textureLoader.load('/textures/black-pieces/normal.jpeg')
-// const blackglossinessTexture = textureLoader.load('/textures/black-pieces/glossiness.jpeg')
-// const blackheightTexture = textureLoader.load('/textures/black-pieces/height.jpeg')
-// const blackmetallicTexture = textureLoader.load('/textures/black-pieces/metallic.jpeg')
-// const blackroughnessTexture = textureLoader.load('/textures/black-pieces/roughness.jpeg')
-// const blackspecularTexture = textureLoader.load('/textures/black-pieces/specular.jpeg')
-
 const checkerboardTexture = textureLoader.load('/textures/checkerboard/checkerboard.png')
 
 checkerboardTexture.wrapS = THREE.RepeatWrapping;
@@ -65,24 +51,24 @@ checkerboardTexture.minFilter = THREE.NearestFilter;
 checkerboardTexture.generateMipmaps = false;
 
 chessColorTexture.repeat.set(2,2)
-chessAOTexture.repeat.set(2,2)
+// chessAOTexture.repeat.set(2,2)
 chessNormalTexture.repeat.set(2,2)
-chessRoughnessTexture.repeat.set(2,2)
+// chessRoughnessTexture.repeat.set(2,2)
 
 chessColorTexture.wrapS = THREE.RepeatWrapping
-chessAOTexture.wrapS = THREE.RepeatWrapping
+// chessAOTexture.wrapS = THREE.RepeatWrapping
 chessNormalTexture.wrapS = THREE.RepeatWrapping
-chessRoughnessTexture.wrapS = THREE.RepeatWrapping
+// chessRoughnessTexture.wrapS = THREE.RepeatWrapping
 
 chessColorTexture.wrapT = THREE.RepeatWrapping
-chessAOTexture.wrapT = THREE.RepeatWrapping
+// chessAOTexture.wrapT = THREE.RepeatWrapping
 chessNormalTexture.wrapT = THREE.RepeatWrapping
-chessRoughnessTexture.wrapT = THREE.RepeatWrapping
+// chessRoughnessTexture.wrapT = THREE.RepeatWrapping
 
 
 // chessColorTexture.magFilter = THREE.LinearFilter
 // chessColorTexture.minFilter = THREE.LinearMipMapLinearFilter
-// chessColorTexture.anisotropy = 16
+
 
 
 
@@ -102,7 +88,7 @@ scene.add(sceneGraph)
 const whiteMaterial = new THREE.MeshStandardMaterial({
     map: chessColorTexture,
     normalMap: chessNormalTexture,
-    roughnessMap: chessRoughnessTexture,
+    // roughnessMap: chessRoughnessTexture,
     metalness: 0.5,
     roughness: 0.2
 })
@@ -140,7 +126,7 @@ sceneGraph.add(pawnPieces)
 }
 
 //blackpawns
-const blackPawn = pawn.clone(true)
+const blackPawn = pawn.clone()
 blackPawn.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
@@ -149,7 +135,7 @@ if (child.isMesh){
 //to create multiple balckpawns lined up accordingly
 const pawnsBlack = []
 for (let i = 0; i<8; i++){
-const pawnPieces = blackPawn.clone(true)
+const pawnPieces = blackPawn.clone()
 pawnPieces.position.set((i-3.5)*squareSize, -0.8, -3.3*squareSize)
 pawnsBlack.push(pawnPieces)
 // scene.add(pawnPieces)
@@ -174,7 +160,7 @@ if (child.isMesh){
 const positionKnights = [-2.5,2.5]
 
 positionKnights.forEach((x)=>{
-const clonedKnights = knight.clone()
+const clonedKnights = knight.clone(true)
 clonedKnights.rotation.y = Math.PI
 clonedKnights.position.set(x * squareSize, -0.8, 4.3*squareSize)
 
@@ -182,7 +168,7 @@ clonedKnights.position.set(x * squareSize, -0.8, 4.3*squareSize)
 sceneGraph.add(clonedKnights)
 
 //black knights
-const blackKnight = knight.clone(true)
+const blackKnight = knight.clone()
 blackKnight.traverse((child)=>{
   if (child.isMesh){
     child.material = blackMaterial
@@ -218,7 +204,7 @@ const squareSize = 2.1
 const positionBishops = [-1.5,1.5]
 
 positionBishops.forEach((x)=>{
-const clonedBishops = bishop.clone()
+const clonedBishops = bishop.clone(true)
 clonedBishops.position.set(x * squareSize, -0.8, 4.3*squareSize)
 
 // scene.add(clonedBishops)
@@ -226,7 +212,7 @@ sceneGraph.add(clonedBishops)
 })
 
 //black bishops
-const blackBishop = bishop.clone(true)
+const blackBishop = bishop.clone()
 blackBishop.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
@@ -426,6 +412,8 @@ scene.add(camera)
 //controls
 const controls = new OrbitControls(camera, canvas)  
 controls.enableDamping = true;
+controls.minDistance = 15
+controls.maxDistance = 50
 // controls.target.set(0, 0.75, 0)
 
 
@@ -439,6 +427,8 @@ const renderer =new THREE.WebGLRenderer(
 renderer.setSize(sizes.width, sizes.height); 
 // renderer.outputEncoding = THREE.sRGBEncoding
 // renderer.toneMapping = THREE.CineonToneMapping
+
+chessColorTexture.anisotropy = renderer.capabilities.getMaxAnisotropy() / 2
 
 
 //animation
