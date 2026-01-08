@@ -3,6 +3,7 @@ import * as THREE from 'three';
 import {OrbitControls} from 'three/examples/jsm/controls/OrbitControls.js' 
 import * as dat from 'dat.gui'
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader.js'
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 
 
 //debug
@@ -79,6 +80,28 @@ chessNormalTexture.wrapT = THREE.RepeatWrapping
 //scene
 const scene = new THREE.Scene();
 
+//sky
+const sky = new Sky();
+sky.scale.setScalar(450000);
+scene.add(sky);
+
+const sun = new THREE.Vector3();
+// Change these variables to move the sun
+const effectController = {
+    turbidity: 10,
+    rayleigh: 3,
+    mieCoefficient: 0.005,
+    mieDirectionalG: 0.7,
+    elevation: 2, // Low elevation = sunset
+    azimuth: 180,
+};
+
+// Update the sky uniforms based on the sun position
+const phi = THREE.MathUtils.degToRad(90 - effectController.elevation);
+const theta = THREE.MathUtils.degToRad(effectController.azimuth);
+sun.setFromSphericalCoords(1, phi, theta);
+sky.material.uniforms['sunPosition'].value.copy(sun);
+
 //group
 const sceneGraph = new THREE.Group();
 scene.add(sceneGraph)
@@ -110,7 +133,10 @@ pawn.scale.set(0.1,0.1,0.1)
 pawn.traverse(
   (child)=>{
 if(child.isMesh){
-  child.material = whiteMaterial
+  child.material = whiteMaterial.clone()
+  child.userData.isPiece = true
+  child.userData.type = 'pawn'
+  child.userData.color = 'white'
 }
   }
 )
@@ -130,6 +156,7 @@ const blackPawn = pawn.clone()
 blackPawn.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
+  child.userData.color = 'black'
 }
 })
 //to create multiple balckpawns lined up accordingly
@@ -152,8 +179,12 @@ const knight = gltf.scene
 knight.scale.set(0.1, 0.1, 0.1)
 knight.traverse((child)=>{
 if (child.isMesh){
-  child.material = whiteMaterial
+  child.material = whiteMaterial.clone() //material uniqueness
   child.material.side = THREE.DoubleSide
+  child.userData.isPiece = true
+  child.userData.type = 'knight'
+  child.userData.color = 'white'
+
 }
 })
   const squareSize = 2.1
@@ -172,6 +203,7 @@ const blackKnight = knight.clone()
 blackKnight.traverse((child)=>{
   if (child.isMesh){
     child.material = blackMaterial
+    child.userData.color = 'black'
   }
 })
 
@@ -195,8 +227,11 @@ gltfloader.load('./models/bishop/bishop.gltf', (gltf)=>{
   // scene.add(bishop)
   bishop.traverse((child)=>{
     if (child.isMesh){
-      child.material = whiteMaterial
+      child.material = whiteMaterial.clone()
       child.material.side = THREE.DoubleSide
+      child.userData.isPiece = true
+      child.userData.type = 'bishop'
+      child.userData.color = 'white'
     }
   })
 
@@ -216,6 +251,7 @@ const blackBishop = bishop.clone()
 blackBishop.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
+  child.userData.color = 'black'
 }
 })
 
@@ -237,8 +273,11 @@ gltfloader.load('./models/queen/queen.gltf',(gltf)=>{
   // scene.add(queen)
   queen.traverse((child)=>{
     if(child.isMesh){
-      child.material = whiteMaterial
+      child.material = whiteMaterial.clone()
       child.material.side = THREE.DoubleSide
+      child.userData.isPiece = true
+      child.userData.type = 'queen'
+      child.userData.color = 'white'
     }
   })
 
@@ -251,6 +290,7 @@ const blackQueen = queen.clone()
 blackQueen.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
+  child.userData.color = 'black'
 }
 })
 blackQueen.position.set(-0.5 * squareSize, -0.8, -4.3*squareSize)
@@ -268,8 +308,11 @@ gltfloader.load('./models/king/king3.gltf', (gltf)=>{
   // scene.add(king)
     king.traverse((child)=>{
     if(child.isMesh){
-      child.material = whiteMaterial
+      child.material = whiteMaterial.clone()
       child.material.side = THREE.DoubleSide
+      child.userData.isPiece = true
+      child.userData.type = 'king'
+      child.userData.color = 'white'
     }
   })
 
@@ -281,6 +324,7 @@ const blackKing = king.clone()
 blackKing.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
+  child.userData.color = 'black'
 }
 })
 blackKing.position.set(0.5 * squareSize, -0.8, -4.3*squareSize)
@@ -296,8 +340,11 @@ rook.scale.set(0.1,0.1,0.1)
 // scene.add(rook)
 rook.traverse((child)=>{
     if(child.isMesh){
-      child.material = whiteMaterial
+      child.material = whiteMaterial.clone()
       child.material.side = THREE.DoubleSide
+      child.userData.isPiece = true
+      child.userData.type = 'rook'
+      child.userData.color = 'white'
     }
   })
 
@@ -317,6 +364,7 @@ const blackRook = rook.clone(true)
 blackRook.traverse((child)=>{
 if (child.isMesh){
   child.material = blackMaterial
+  child.userData.color = 'black'
 }
 })
 
@@ -347,6 +395,7 @@ gltfloader.load('./models/chessboard/chessboard4.gltf', (gltf)=>{
   metalness: 0.2
 
         })
+
       }
        if (child.name === "Cube_2") {
         child.material = new THREE.MeshStandardMaterial({
@@ -354,6 +403,7 @@ gltfloader.load('./models/chessboard/chessboard4.gltf', (gltf)=>{
         })
 
    }
+   child.userData.isBoard = true
   }
   })
 
@@ -390,6 +440,58 @@ floor.material.side = THREE.DoubleSide
 // scene.add(floor)
 sceneGraph.add(floor)
 
+
+//raycaster
+let selectedPiece = null;
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
+window.addEventListener('click', (event) => {
+    // 1. Convert mouse position to -1 to +1 range
+    mouse.x = (event.clientX / sizes.width) * 2 - 1;
+    mouse.y = -(event.clientY / sizes.height) * 2 + 1;
+
+    // 2. Update the raycaster with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
+
+    // 3. Calculate objects intersecting the picking ray
+    // We check sceneGraph.children because that's where your pieces and board are
+    const intersects = raycaster.intersectObjects(sceneGraph.children, true);
+
+    if (intersects.length > 0) {
+        const clickedObject = intersects[0].object;
+        const data = clickedObject.userData;
+
+        // LOGIC A: If we clicked a Piece
+        if (data.isPiece) {
+            // Deselect previous piece if it exists
+            if (selectedPiece) {
+                selectedPiece.material.emissive.setHex(0x000000);
+            }
+
+            // Select new piece
+            selectedPiece = clickedObject;
+            // Make it glow yellow to show it's selected
+            selectedPiece.material.emissive.setHex(0x555500); 
+            
+            console.log(`Selected ${data.color} ${data.type}`);
+        } 
+        
+        // LOGIC B: If we have a piece selected and click the Board
+        else if (data.isBoard && selectedPiece) {
+            const point = intersects[0].point;
+            
+            // Snap the piece to the center of the clicked square
+            // We'll calculate the exact grid math in the next step
+            selectedPiece.position.x = Math.round(point.x / 2.1) * 2.1;
+            selectedPiece.position.z = Math.round(point.z / 2.1) * 2.1;
+
+            // Clear selection
+            selectedPiece.material.emissive.setHex(0x000000);
+            selectedPiece = null;
+        }
+    }
+});
 
 // lights
 const ambientLight = new THREE.AmbientLight(0xffffff, 1)
@@ -438,7 +540,7 @@ const loop = () =>
 {
   //update objects
 const elapsedTime = clock.getElapsedTime()
-sceneGraph.rotation.y = 0.05 * elapsedTime * Math.PI * 2
+// sceneGraph.rotation.y = 0.05 * elapsedTime * Math.PI * 2
    
   controls.update()
 
